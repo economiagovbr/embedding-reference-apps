@@ -4,10 +4,8 @@ import jwt
 from django.contrib.auth.decorators import login_required
 
 
-METABASE_SITE_URL = "localhost:3000"
-METABASE_SECRET_KEY = "a1c0952f3ff361f1e7dd8433a0a50689a004317a198ecb0a67ba90c73c27a958"
-
-
+METABASE_SITE_URL = "http://cginflab.mp.intra"
+METABASE_SECRET_KEY = "2efc6d94db8684a97fd0566ed946a6776706b4950e60afbc008e87994a63c01f"
 
 def index(request):
     return render(request,
@@ -15,19 +13,20 @@ def index(request):
                   {})
 
 def signed_public_dashboard(request):
+
     payload = {
-        "resource": {"dashboard": 1},
+        "resource": {"dashboard": 3},
         "params": {
+            "single_date": "2019-03-01"
         }
     }
-
     token = jwt.encode(payload, METABASE_SECRET_KEY, algorithm="HS256")
 
-    iframeUrl = METABASE_SITE_URL + "/embed/dashboard/" + token + "#bordered=true"
-
+    iframeUrl = METABASE_SITE_URL + "/embed/dashboard/" + token.decode("utf8") + "#bordered=true&titled=true"
     return render(request,
                   'user_stats/signed_public_dashboard.html',
                   {'iframeUrl': iframeUrl})
+
 @login_required
 def signed_chart(request, user_id):
     payload = {
